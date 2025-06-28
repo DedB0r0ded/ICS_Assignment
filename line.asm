@@ -6,27 +6,27 @@ section .text
     global _start
 
 _start:
-    ; Рисуем горизонтальную линию из 20 звездочек
-    mov rcx, 20        ; количество символов
+    ; Draw horizontal line of 20 asterisks
+    mov rcx, 20        ; number of characters
     
 draw_line:
-    ; Вывод символа '*'
+    ; Output '*' character
     mov rax, 1         ; sys_write
     mov rdi, 1         ; stdout
-    mov rsi, star      ; адрес символа
-    mov rdx, 1         ; длина
+    mov rsi, star      ; address of character
+    mov rdx, 1         ; length
     syscall
     
-    loop draw_line     ; rcx--, если rcx != 0, то прыжок на draw_line
+    loop draw_line     ; rcx--, if rcx != 0, jump to draw_line
     
-    ; Вывод новой строки
+    ; Output newline
     mov rax, 1         ; sys_write
     mov rdi, 1         ; stdout
-    mov rsi, newline   ; адрес символа новой строки
-    mov rdx, 1         ; длина
+    mov rsi, newline   ; address of newline character
+    mov rdx, 1         ; length
     syscall
     
-    ; Выход из программы
+    ; Exit program
     mov rax, 60        ; sys_exit
-    mov rdi, 0         ; код возврата
+    mov rdi, 0         ; return code
     syscall
