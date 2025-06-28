@@ -1,5 +1,5 @@
 # ICS_Assignment
-ICS assignment Part A
+ICS assignment Part A  
 Ali - Square (4) + Triangle (5) - done  
 Darren - Point/Pixel (1) + Arrow (12) - done  
 Hakim - Diamond (10) + Heart (11) - done  
