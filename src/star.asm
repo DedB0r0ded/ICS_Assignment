@@ -1,15 +1,15 @@
 section .data
-    hash    db '#'
+    sar_char    db '#'
     space   db ' '
     newline db 10
-    size    dq 7            ; Must be an odd number
+    sar_size    dq 7            ; Must be an odd number
 
 section .text
     global _start
 
 _start:
-    mov     rbx, [size]     ; rbx = size
-    xor     r8, r8          ; r8 = row index
+    mov     rbx, [sar_size]     ; rbx = sar_size
+    xor     r8, r8          	; r8 = row index
 
 .row_loop:
     cmp     r8, rbx
@@ -22,7 +22,7 @@ _start:
     jge     .print_newline
 
     mov     rcx, rbx
-    shr     rcx, 1          ; rcx = center = size / 2
+    shr     rcx, 1          ; rcx = center = sar_size / 2
 
     ; abs(row - center)
     mov     r10, r8
@@ -42,18 +42,18 @@ _start:
 
     ; Compare diagonals: abs(row-center) == abs(col-center)
     cmp     r10, r11
-    je      .print_hash
+    je      .print_sar_char
 
     ; Or row is center line
     cmp     r8, rcx
-    je      .print_hash
+    je      .print_sar_char
 
     jmp     .print_space
 
-.print_hash:
+.print_sar_char:
     mov     rax, 1
     mov     rdi, 1
-    mov     rsi, hash
+    mov     rsi, sar_char
     mov     rdx, 1
     syscall
     jmp     .next_col

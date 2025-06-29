@@ -1,27 +1,27 @@
 section .data
-    hash        db '#'
+    sar_char        db '#'
     space       db ' '
     newline     db 10
-    triangle_height dq 6          ; You can set any height here
+    sar_triangle_height dq 6          ; You can set any height here
 
 section .text
     global _start
 
 _start:
-    mov     rbx, [triangle_height] ; total rows
-    mov     r13, rbx               ; use r13 as row counter
+    mov     rbx, [sar_triangle_height] 	; total rows
+    mov     r13, rbx               		; use r13 as row counter
 
 .draw_rows:
     cmp     r13, 0
     je      .exit
     push    r13
 
-    mov     rbx, [triangle_height]
+    mov     rbx, [sar_triangle_height]
     sub     rbx, r13               ; spaces = height - current row
 
 .print_spaces:
     cmp     rbx, 0
-    jle     .print_hashes
+    jle     .print_sar_chares
     mov     rax, 1
     mov     rdi, 1
     mov     rsi, space
@@ -30,22 +30,22 @@ _start:
     dec     rbx
     jmp     .print_spaces
 
-.print_hashes:
-    mov     rbx, [triangle_height]
+.print_sar_chares:
+    mov     rbx, [sar_triangle_height]
     sub     rbx, r13
     imul    rbx, 2
-    add     rbx, 1                 ; hashes = 2*(row-1)+1
+    add     rbx, 1                 ; sar_chares = 2*(row-1)+1
 
-.print_hash_loop:
+.print_sar_char_loop:
     cmp     rbx, 0
     jle     .newline
     mov     rax, 1
     mov     rdi, 1
-    mov     rsi, hash
+    mov     rsi, sar_char
     mov     rdx, 1
     syscall
     dec     rbx
-    jmp     .print_hash_loop
+    jmp     .print_sar_char_loop
 
 .newline:
     mov     rax, 1

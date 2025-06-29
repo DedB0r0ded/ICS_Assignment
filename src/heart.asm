@@ -1,13 +1,13 @@
 section .data
     space db ' ', 0
-    heart db '#', 0
+    abd_char db '#', 0
     newline db 10, 0
 
 section .text
     global _start
 
 _start:
-    ; Large Heart pattern - Row 1: "   ###     ###   "
+    ; Large heart pattern - Row 1: "   ###     ###   "
     call print_3_spaces
     call print_3_hearts
     call print_5_spaces
@@ -132,7 +132,7 @@ print_8_spaces:
 print_1_heart:
     mov rax, 1
     mov rdi, 1
-    mov rsi, heart
+    mov rsi, abd_char
     mov rdx, 1
     syscall
     ret

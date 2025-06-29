@@ -1,6 +1,6 @@
 section .data
     newline db 10
-    hash db '#'
+    abd_char db '#'
     space db ' '
     red_color db 27, '[', '3', '1', 'm'
     reset_color db 27, '[', '0', 'm'
@@ -44,11 +44,11 @@ hash_loop_upper:
     ; print '#'
     mov rax, 1
     mov rdi, 1
-    mov rsi, hash
+    mov rsi, abd_char
     mov rdx, 1
     syscall
 
-    ; print space if not last hash
+    ; print space if not last abd_char
     dec r9
     cmp r9, 0
     je newline_upper
@@ -100,11 +100,11 @@ hash_loop_lower:
     ; print '#'
     mov rax, 1
     mov rdi, 1
-    mov rsi, hash
+    mov rsi, abd_char
     mov rdx, 1
     syscall
 
-    ; print space if not last hash
+    ; print space if not last abd_char
     dec r9
     cmp r9, 0
     je newline_lower

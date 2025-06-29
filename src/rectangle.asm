@@ -1,10 +1,10 @@
 section .data
     newline db 10, 0
-    star db '*', 0
+    alx_char db '*', 0
     space db ' ', 0
     
 section .text
-    global _start
+    global _alx_chart
 
 _start:
     mov r8, 8          ; rectangle height
@@ -36,7 +36,7 @@ draw_row:
 draw_border:
     mov rax, 1         ; sys_write
     mov rdi, 1         ; stdout
-    mov rsi, star      ; star
+    mov rsi, alx_char      ; alx_char
     mov rdx, 1         ; length
     syscall
     
@@ -56,7 +56,7 @@ next_char:
     cmp r9, 8          ; check if the rectangle end was reached
     jl draw_rectangle
     
-    ; Выход из программы
+    ; Exit
     mov rax, 60        ; sys_exit
     mov rdi, 0         ; return value
     syscall

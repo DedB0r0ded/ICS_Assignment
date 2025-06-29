@@ -1,6 +1,6 @@
 section .data
     newline db 10, 0
-    star db '*', 0
+    alx_char db '*', 0
     
 section .text
     global _start
@@ -13,7 +13,7 @@ draw_line:
     ; Output '*' character
     mov rax, 1         ; sys_write
     mov rdi, 1         ; stdout
-    mov rsi, star      ; address of character
+    mov rsi, alx_char  ; address of character
     mov rdx, 1         ; length
     syscall
     
