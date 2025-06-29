@@ -50,6 +50,7 @@ section .data
     main_menu_quit_len equ $ - main_menu_quit_msg 
     
     ret_msg db '0. Return to the main menu', EOL, EOS
+	ret_msg_len equ $ - ret_msg
     ret_menu_id db '0'
     menu_prompt db 'Select option: ', EOS
 	menu_prompt_len equ $ - menu_prompt
@@ -58,11 +59,11 @@ section .data
 	
 	
 	; Error messages to norify user in case of incorrect input
-	menu_input_too_long_msg db 'Error: too many characters. Try again'
+	menu_input_too_long_msg db 'Error: too many characters. Try again', EOL, EOS
 	menu_input_too_long_len equ $ - menu_input_too_long_msg
-	menu_input_too_short_msg db 'Error: empty input. Try again'
+	menu_input_too_short_msg db 'Error: empty input. Try again', EOL, EOS
 	menu_input_too_short_len equ $ - menu_input_too_short_msg
-	menu_input_invalid_range_msg db 'Error: character entered is out of valid range. Try again'
+	menu_input_invalid_range_msg db 'Error: character entered is out of valid range. Try again', EOL, EOS
 	menu_input_invalid_range_len equ $ - menu_input_invalid_range_msg
 
     
@@ -226,21 +227,20 @@ section .bss
 section .text
     global _start
 
-
-; ============== INPUT MACROS ==============
-%macro get_input 0
-	; Clear the buffer before input
-	mov rdi, input_buffer
-	mov rcx, INPUT_BUFFER_LENGTH
-	xor al, al
-	rep stosb ; Iterate through all string and fill it with empty bytes
+; ============= SUBMENU MACRO ==============
+%macro submenu 4
+	call get_input
+	cmp al, [ret_menu_id] 	; if user wants to go back to main menu
+	je main_loop			; jump to main_loop label
 	
-	mov rax, 0	; sys_read
-	mov rdi, 0	; stdin
-	mov rsi, input_buffer			; buffer
-	mov rdx, INPUT_BUFFER_LENGTH	; buffer length
+	cmp al, [%1] ; 1 parameter - id of the first menu option
+	je %2	; label to jump if the first menu option selected
+	
+	cmp al, [%3] ; 3 parameter - id of the second menu option
+	je %4	; label to jump if the second menu option selected
+	
+	jmp invalid_input_range ; if input value out of range - show an error
 %endmacro
-
 
 ; ============== OUTPUT MACRO ==============
 %macro print_msg 2
@@ -253,9 +253,7 @@ section .text
 
 
 _start:
-    
 main_loop:
-
 show_main_menu:
     print_msg main_menu_head1, main_menu_head1_len
     print_msg main_menu_head2, main_menu_head2_len
@@ -275,6 +273,77 @@ show_main_menu:
 main_input:
     print_msg menu_prompt, menu_prompt_len
     ; Clear the buffer before input
+	call get_input
+	
+jump_to_submenu:
+	cmp al, [ret_menu_id]
+	je exit
+	
+	cmp al, [main_menu_ali_id]
+	je show_ali_menu
+	
+	cmp al, [main_menu_dar_id]
+	je show_dar_menu
+	
+	cmp al, [main_menu_alx_id]
+	je show_alx_menu
+	
+	cmp al, [main_menu_moh_id]
+	je show_moh_menu
+	
+	cmp al, [main_menu_sar_id]
+	je show_sar_menu
+	
+	cmp al, [main_menu_abd_id]
+	je show_abd_menu
+	
+	jmp invalid_input_range
+	
+
+show_ali_menu:
+	print_msg ali_menu_msg, ali_menu_len
+	print_msg square_menu_msg, square_menu_len
+	print_msg triangle_menu_msg, triangle_menu_len
+	print_msg ret_msg, ret_msg_len 
+	submenu square_menu_id, draw_square, triangle_menu_id, draw_triangle
+	
+show_dar_menu:
+	print_msg dar_menu_msg, dar_menu_len
+	print_msg point_menu_msg, point_menu_len
+	print_msg arrow_menu_msg, arrow_menu_len
+	print_msg ret_msg, ret_msg_len 
+	submenu point_menu_id, draw_point, arrow_menu_id, draw_arrow
+
+show_alx_menu:
+	print_msg alx_menu_msg, alx_menu_len
+	print_msg line_menu_msg, line_menu_len
+	print_msg rect_menu_msg, rect_menu_len
+	print_msg ret_msg, ret_msg_len 
+	submenu line_menu_id, draw_line, rect_menu_id, draw_rect
+
+show_moh_menu:
+	print_msg moh_menu_msg, moh_menu_len
+	print_msg cresent_menu_msg, cresent_menu_len
+	print_msg ellipse_menu_msg, ellipse_menu_len
+	print_msg ret_msg, ret_msg_len 
+	submenu cresent_menu_id, draw_cresent, ellipse_menu_id, draw_ellipse
+
+show_sar_menu:
+	print_msg sar_menu_msg, sar_menu_len
+	print_msg polygon_menu_msg, polygon_menu_len
+	print_msg star_menu_msg, star_menu_len
+	print_msg ret_msg, ret_msg_len 
+	submenu polygon_menu_id, draw_polygon, star_menu_id, draw_star
+
+show_abd_menu:
+	print_msg abd_menu_msg, abd_menu_len
+	print_msg diamond_menu_msg, diamond_menu_len
+	print_msg heart_menu_msg, heart_menu_len
+	print_msg ret_msg, ret_msg_len 
+	submenu diamond_menu_id, draw_diamond, heart_menu_id, draw_heart
+	
+get_input:
+	; Clear the buffer before input
 	mov rdi, input_buffer
 	mov rcx, INPUT_BUFFER_LENGTH
 	xor al, al
@@ -284,6 +353,7 @@ main_input:
 	mov rdi, 0	; stdin
 	mov rsi, input_buffer			; buffer
 	mov rdx, INPUT_BUFFER_LENGTH	; buffer length
+	syscall
 	
 	cmp rax, 2					; 1 character + new line expected (2 in total)
 	jg invalid_input_too_long 	; error if more than 2 characters
@@ -291,68 +361,7 @@ main_input:
 	jle invalid_input_too_short
 	
 	mov al, [input_buffer]
-	
-jump_to_submenu:
-	cmp al, [ret_menu_id]
-	je exit
-	
-	cmp al, [main_menu_ali_id]
-	je ali_menu
-	
-	cmp al, [main_menu_dar_id]
-	je dar_menu
-	
-	cmp al, [main_menu_alx_id]
-	je alx_menu
-	
-	cmp al, [main_menu_moh_id]
-	je moh_menu
-	
-	cmp al, [main_menu_sar_id]
-	je sar_menu
-	
-	cmp al, [main_menu_abd_id]
-	je abd_menu
-	
-	jmp invalid_input_range
-	
-
-ali_menu:
-	print_msg ali_menu_msg, ali_menu_len
-	print_msg square_menu_msg, square_menu_len
-	print_msg triangle_menu_msg, triangle_menu_len
-	jmp main_loop
-	
-dar_menu:
-	print_msg dar_menu_msg, dar_menu_len
-	print_msg point_menu_msg, point_menu_len
-	print_msg arrow_menu_msg, arrow_menu_len
-	jmp main_loop
-
-alx_menu:
-	print_msg alx_menu_msg, alx_menu_len
-	print_msg line_menu_msg, line_menu_len
-	print_msg rect_menu_msg, rect_menu_len
-	jmp main_loop
-
-moh_menu:
-	print_msg moh_menu_msg, moh_menu_len
-	print_msg cresent_menu_msg, cresent_menu_len
-	print_msg ellipse_menu_msg, ellipse_menu_len
-	jmp main_loop
-
-sar_menu:
-	print_msg sar_menu_msg, sar_menu_len
-	print_msg polygon_menu_msg, polygon_menu_len
-	print_msg star_menu_msg, star_menu_len
-	jmp main_loop
-
-abd_menu:
-	print_msg abd_menu_msg, abd_menu_len
-	print_msg diamond_menu_msg, diamond_menu_len
-	print_msg heart_menu_msg, heart_menu_len
-	jmp main_loop
-	
+	ret
 	
 invalid_input_too_long:
     print_msg menu_input_too_long_msg, menu_input_too_long_len
@@ -367,6 +376,54 @@ invalid_input_range:
     jmp main_input
 
 
+; Ali Hasan Abbod ALAMMARI
+draw_square:
+	jmp show_ali_menu
+	
+draw_triangle:
+	jmp show_ali_menu
+	
+	
+; Darren Chui Weng Mun
+draw_point:
+	jmp show_dar_menu
+	
+draw_arrow:
+	jmp show_dar_menu
+	
+	
+; Kurapatkin Aliaksandr
+draw_line:
+	jmp show_alx_menu
+	
+draw_rect:
+	jmp show_alx_menu
+	
+	
+; Mohamed Abdifatah Ali
+draw_cresent:
+	jmp show_moh_menu
+	
+draw_ellipse:
+	jmp show_moh_menu
+	
+	
+; Sarrvesh Mathivanan
+draw_polygon:
+	jmp show_sar_menu
+	
+draw_star:
+	jmp show_sar_menu
+	
+	
+;hakim
+draw_diamond:
+	jmp show_abd_menu
+	
+draw_heart:
+	jmp show_abd_menu
+	
+	
 exit:
     mov rax, 60
     xor rdi, rdi
