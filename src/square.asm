@@ -17,10 +17,10 @@ _start:
 
     mov r8, 5          ; row counter
 
-row_loop:
+.row_loop:
     mov r9, 5          ; column counter
 
-col_loop:
+.col_loop:
     ; print '# '
     mov rax, 1         ; sys_write
     mov rdi, 1         ; stdout
@@ -29,7 +29,7 @@ col_loop:
     syscall
 
     dec r9
-    jnz col_loop
+    jnz .col_loop
 
     ; print newline
     mov rax, 1
@@ -39,7 +39,7 @@ col_loop:
     syscall
 
     dec r8
-    jnz row_loop
+    jnz .row_loop
 
     ; Reset color
     mov rax, 1

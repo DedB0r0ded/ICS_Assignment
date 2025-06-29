@@ -18,14 +18,14 @@ _start:
 
     mov r8, 1          ; row counter starts at 1
 
-row_loop:
+.row_loop:
     ; Print leading spaces
     mov r10, 5
     sub r10, r8
 
-print_spaces:
+.print_spaces:
     cmp r10, 0
-    je print_hashes
+    je .print_hashes
     
     mov rax, 1
     mov rdi, 1
@@ -34,12 +34,12 @@ print_spaces:
     syscall
     
     dec r10
-    jmp print_spaces
+    jmp .print_spaces
 
-print_hashes:
+.print_hashes:
     mov r9, r8
 
-hash_loop:
+.hash_loop:
     ; print '#'
     mov rax, 1
     mov rdi, 1
@@ -50,7 +50,7 @@ hash_loop:
     ; print space if not last hash
     dec r9
     cmp r9, 0
-    je print_newline
+    je .print_newline
 
     mov rax, 1
     mov rdi, 1
@@ -58,9 +58,9 @@ hash_loop:
     mov rdx, 1
     syscall
 
-    jmp hash_loop
+    jmp .hash_loop
 
-print_newline:
+.print_newline:
     mov rax, 1
     mov rdi, 1
     mov rsi, newline
@@ -69,7 +69,7 @@ print_newline:
 
     inc r8
     cmp r8, 6
-    jne row_loop
+    jne .row_loop
 
     ; Reset terminal color
     mov rax, 1
